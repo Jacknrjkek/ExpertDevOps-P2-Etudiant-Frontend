@@ -12,4 +12,8 @@ export class UserService {
   register(user: Register): Observable<Object> {
     return this.httpClient.post('/api/register', user);
   }
+
+  login(credentials: { login: string; password: string }): Observable<Object> {
+    return this.httpClient.post('/api/login', credentials);
+  }
 }
