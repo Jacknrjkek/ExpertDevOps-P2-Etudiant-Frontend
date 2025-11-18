@@ -1,0 +1,44 @@
+<div class="card m-3">
+  <h5 class="card-header">Liste des étudiants</h5>
+
+  <div class="card-body">
+    <button class="btn btn-primary mb-3" (click)="createStudent()">
+      Ajouter un étudiant
+    </button>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Prénom</th>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (student of students; track student.id) {
+          <tr>
+            <td>{{ student.firstName }}</td>
+            <td>{{ student.lastName }}</td>
+            <td>{{ student.email }}</td>
+
+            <td class="text-center">
+              <button class="btn btn-info btn-sm mx-1" (click)="view(student.id!)">
+                Détail
+              </button>
+
+              <button class="btn btn-warning btn-sm mx-1" (click)="edit(student.id!)">
+                Modifier
+              </button>
+
+              <button class="btn btn-danger btn-sm mx-1" (click)="delete(student.id!)">
+                Supprimer
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

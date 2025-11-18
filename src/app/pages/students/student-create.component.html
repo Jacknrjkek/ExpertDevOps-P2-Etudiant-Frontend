@@ -1,0 +1,68 @@
+<div class="card m-3">
+  <h5 class="card-header">Créer un étudiant</h5>
+
+  <div class="card-body">
+    <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-row">
+        <div class="form-group col-5">
+          <label>Prénom</label>
+          <input
+            type="text"
+            formControlName="firstName"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && form['firstName'].errors }"
+          />
+          @if (submitted && form['firstName'].errors) {
+            <div class="invalid-feedback">
+              @if (form['firstName'].errors?.['required']) {
+                <div>Le prénom est requis</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group col-5">
+          <label>Nom</label>
+          <input
+            type="text"
+            formControlName="lastName"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }"
+          />
+          @if (submitted && form['lastName'].errors) {
+            <div class="invalid-feedback">
+              @if (form['lastName'].errors?.['required']) {
+                <div>Le nom est requis</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          type="text"
+          formControlName="email"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && form['email'].errors }"
+        />
+        @if (submitted && form['email'].errors) {
+          <div class="invalid-feedback">
+            @if (form['email'].errors?.['required']) {
+              <div>L’email est requis</div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary mx-1">Créer</button>
+        <button class="btn btn-secondary mx-1" type="reset" (click)="onReset()">Annuler</button>
+        <button class="btn btn-dark mx-1" (click)="goBack()">Retour à la liste</button>
+      </div>
+
+    </form>
+  </div>
+</div>
