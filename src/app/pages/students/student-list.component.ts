@@ -1,21 +1,31 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { StudentService, Student } from '../../core/service/student.service';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-student-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.css']
 })
-export class StudentListComponent implements OnInit {
+export class StudentListComponent implements OnInit, AfterViewInit {
 
   private studentService = inject(StudentService);
-  private router = inject(Router);
+  private fb = inject(FormBuilder);
 
   students: Student[] = [];
+
+  createForm = this.fb.group({
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
+  });
+
+  private createModal: any;
 
   ngOnInit() {
     this.studentService.getAll().subscribe({
@@ -23,23 +33,36 @@ export class StudentListComponent implements OnInit {
     });
   }
 
-  createStudent() {
-    this.router.navigate(['/students/create']);
+  ngAfterViewInit() {
+    const modalEl = document.getElementById('createModal');
+    this.createModal = new bootstrap.Modal(modalEl!);
   }
 
-  view(id: number) {
-    this.router.navigate(['/students', id]);
+  openCreateModal() {
+    this.createForm.reset();
+    this.createModal.show();
   }
 
-  edit(id: number) {
-    this.router.navigate(['/students', id, 'edit']);
+  submitCreate() {
+    if (this.createForm.invalid) return;
+
+    this.studentService.create(this.createForm.value as any).subscribe({
+      next: () => {
+        this.createModal.hide();
+        this.studentService.getAll().subscribe({
+          next: (data) => this.students = data
+        });
+      },
+      error: () => alert("Erreur lors de la création.")
+    });
   }
 
   delete(id: number) {
-    if (confirm('Supprimer cet étudiant ?')) {
-      this.studentService.delete(id).subscribe({
-        next: () => this.students = this.students.filter(s => s.id !== id)
-      });
-    }
+    if (!confirm('Supprimer cet étudiant ?')) return;
+
+    this.studentService.delete(id).subscribe({
+      next: () => this.students = this.students.filter(s => s.id !== id)
+    });
   }
+
 }

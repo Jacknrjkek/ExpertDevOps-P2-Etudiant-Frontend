@@ -1,44 +1,77 @@
-<div class="card m-3">
-  <h5 class="card-header">Liste des étudiants</h5>
+<div class="container mt-4">
 
-  <div class="card-body">
-    <button class="btn btn-primary mb-3" (click)="createStudent()">
-      Ajouter un étudiant
-    </button>
+  <!-- Bouton création -->
+  <button class="btn btn-primary mb-3" (click)="openCreateModal()">
+    Créer un étudiant
+  </button>
 
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Prénom</th>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+  <!-- Tableau -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Prénom</th>
+        <th>Nom</th>
+        <th>Email</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
 
-      <tbody>
-        @for (student of students; track student.id) {
-          <tr>
-            <td>{{ student.firstName }}</td>
-            <td>{{ student.lastName }}</td>
-            <td>{{ student.email }}</td>
+    <tbody>
+      <tr *ngFor="let s of students">
+        <td>{{ s.firstName }}</td>
+        <td>{{ s.lastName }}</td>
+        <td>{{ s.email }}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-danger" (click)="delete(s.id)">
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-            <td class="text-center">
-              <button class="btn btn-info btn-sm mx-1" (click)="view(student.id!)">
-                Détail
-              </button>
 
-              <button class="btn btn-warning btn-sm mx-1" (click)="edit(student.id!)">
-                Modifier
-              </button>
+  <!-- ========= POPUP CREATION ========= -->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
 
-              <button class="btn btn-danger btn-sm mx-1" (click)="delete(student.id!)">
-                Supprimer
-              </button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        <div class="modal-header">
+          <h5 class="modal-title">Créer un étudiant</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <form [formGroup]="createForm" (ngSubmit)="submitCreate()">
+
+          <div class="modal-body">
+
+            <div class="mb-3">
+              <label>Prénom</label>
+              <input class="form-control" formControlName="firstName">
+            </div>
+
+            <div class="mb-3">
+              <label>Nom</label>
+              <input class="form-control" formControlName="lastName">
+            </div>
+
+            <div class="mb-3">
+              <label>Email</label>
+              <input class="form-control" formControlName="email">
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="reset" class="btn btn-secondary">Effacer</button>
+            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Retour</button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
   </div>
+
 </div>
