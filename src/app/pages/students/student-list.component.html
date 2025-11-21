@@ -43,7 +43,7 @@
   </table>
 
 
-    <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
 
@@ -59,23 +59,33 @@
             <div class="mb-3">
               <label>Prénom</label>
               <input class="form-control" formControlName="firstName">
+                            <div *ngIf="createForm.get('firstName')?.touched && createForm.get('firstName')?.invalid" class="text-danger small mt-1">
+                Le prénom est requis.
+              </div>
             </div>
 
             <div class="mb-3">
               <label>Nom</label>
               <input class="form-control" formControlName="lastName">
+                            <div *ngIf="createForm.get('lastName')?.touched && createForm.get('lastName')?.invalid" class="text-danger small mt-1">
+                Le nom est requis.
+              </div>
             </div>
 
             <div class="mb-3">
               <label>Email</label>
               <input class="form-control" formControlName="email">
+                            <div *ngIf="createForm.get('email')?.touched && createForm.get('email')?.invalid" class="text-danger small mt-1">
+                <div *ngIf="createForm.get('email')?.errors?.['required']">L'adresse email est requise.</div>
+                <div *ngIf="createForm.get('email')?.errors?.['email']">Veuillez entrer une adresse email valide.</div>
+              </div>
             </div>
 
           </div>
 
           <div class="modal-footer">
             <button type="reset" class="btn btn-secondary">Effacer</button>
-            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="submit" class="btn btn-primary" [disabled]="createForm.invalid">Valider</button>
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Retour</button>
           </div>
 
@@ -83,7 +93,7 @@
 
       </div>
     </div>
-  </div>
+    </div>
 
 
 
