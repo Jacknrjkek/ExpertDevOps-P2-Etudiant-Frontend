@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { StudentService, Student } from '../../core/service/student.service';
-
+import { Router } from '@angular/router';
 declare var bootstrap: any;
 
 @Component({
@@ -16,6 +16,7 @@ export class StudentListComponent implements OnInit, AfterViewInit {
 
   private studentService = inject(StudentService);
   private fb = inject(FormBuilder);
+  private router = inject(Router); // Reste injecté pour le logout
 
   students: Student[] = [];
 
@@ -116,4 +117,11 @@ export class StudentListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  /* ====== LOGOUT ====== */
+
+  logout() {
+    // Supprime le token et redirige vers l'accueil
+    localStorage.removeItem('token');
+    this.router.navigate(['/home']);
+  }
 }

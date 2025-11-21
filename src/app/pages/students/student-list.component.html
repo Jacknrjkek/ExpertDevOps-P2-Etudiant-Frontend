@@ -1,12 +1,17 @@
 <div class="container mt-4">
 
-  <!-- Bouton création -->
-  <button class="btn btn-primary mb-3" (click)="openCreateModal()">
-    Créer un étudiant
-  </button>
+    <div class="d-flex justify-content-between mb-3">
 
-  <!-- Tableau -->
-  <table class="table table-striped">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+       Créer un étudiant
+    </button>
+
+        <button class="btn btn-dark" (click)="logout()">
+       Déconnexion
+    </button>
+  </div>
+
+    <table class="table table-striped">
     <thead>
       <tr>
         <th>Prénom</th>
@@ -24,13 +29,11 @@
 
         <td class="text-end">
 
-          <!-- Bouton modifier -->
-          <button class="btn btn-sm btn-warning mx-1" (click)="openEditModal(s)">
+                    <button class="btn btn-sm btn-warning mx-1" (click)="openEditModal(s)">
             Modifier
           </button>
 
-          <!-- Bouton supprimer -->
-          <button class="btn btn-sm btn-danger mx-1" (click)="delete(s.id!)">
+                    <button class="btn btn-sm btn-danger mx-1" (click)="delete(s.id!)">
             Supprimer
           </button>
 
@@ -40,8 +43,7 @@
   </table>
 
 
-  <!-- ========= POPUP CREATION ========= -->
-  <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
 
@@ -85,8 +87,7 @@
 
 
 
-  <!-- ========= POPUP MODIFICATION ========= -->
-  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
 

@@ -5,26 +5,38 @@
   background-color: #fff;
   padding: 2rem;
   border-radius: 4px;
-  /* Ombre portée douce et bordure haute verte "lampe de banquier" */
   box-shadow: 0 5px 15px rgba(0,0,0,0.08);
   border-top: 6px solid #2e7d32;
 }
 
-/* Bouton "Créer un étudiant" (Style cachet de cire rouge) */
-button.btn-primary.mb-3 {
-  background-color: #d84315;
-  border: 1px solid #bf360c;
+/* Style général des boutons d'action dans le conteneur */
+.container .btn {
   font-family: 'Merriweather', serif;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.2s ease-in-out;
 }
 
-button.btn-primary.mb-3:hover {
+/* Bouton principal (Créer un étudiant) */
+.container .btn-primary {
+  background-color: #d84315; /* Rouge cire à cacheter */
+  border: 1px solid #bf360c;
+}
+.container .btn-primary:hover {
   background-color: #bf360c;
 }
 
+/* Bouton Déconnexion (Dark) */
+.container .btn-dark {
+  background-color: #3e2723; /* Marron foncé/Cuir */
+  border: 1px solid #281a16;
+}
+.container .btn-dark:hover {
+  background-color: #281a16;
+}
+
 /* =========================================
-   TABLEAU (Style liste papier)
+   TABLEAU (Le registre)
    ========================================= */
 .table {
   border: 1px solid #d7ccc8;
@@ -32,7 +44,7 @@ button.btn-primary.mb-3:hover {
 }
 
 .table thead th {
-  background-color: #f4f1ea; /* Couleur parchemin */
+  background-color: #f4f1ea;
   color: #3e2723;
   font-family: 'Merriweather', serif;
   border-bottom: 2px solid #8d6e63;
@@ -46,11 +58,11 @@ button.btn-primary.mb-3:hover {
 }
 
 .table tbody tr:nth-of-type(even) {
-  background-color: #faf9f6; /* Très léger gris/beige pour l'alternance */
+  background-color: #faf9f6;
 }
 
 .table tbody tr:hover {
-  background-color: #efebe9; /* Couleur papier vieilli au survol */
+  background-color: #efebe9;
 }
 
 .table td {
@@ -59,32 +71,32 @@ button.btn-primary.mb-3:hover {
   vertical-align: middle;
 }
 
-/* Petits boutons d'actions dans le tableau */
+
+/* Boutons d'action dans le tableau (Modifier/Supprimer) */
 .btn-warning {
-  background-color: #ffb300; /* Jaune moutarde */
+  background-color: #ffb300;
   color: #3e2723;
   border: 1px solid #ff8f00;
 }
 
 .btn-danger {
-  background-color: #a1887f; /* Marron grisâtre (plus discret que le rouge vif) */
+  background-color: #a1887f;
   color: white;
   border: 1px solid #8d6e63;
 }
 
+
 /* =========================================
-   MODALES / POPUPS (Style Fiche Cartonnée)
+   MODALES / POPUPS
    ========================================= */
 
-/* Le fond de la modale */
 .modal-content {
-  background-color: #fffdf5; /* Papier crème */
-  border: 2px solid #8d6e63; /* Bordure marron marquée */
+  background-color: #fffdf5;
+  border: 2px solid #8d6e63;
   border-radius: 4px;
-  box-shadow: 10px 10px 0px rgba(62, 39, 35, 0.15); /* Ombre "dure" pour effet carte posée */
+  box-shadow: 10px 10px 0px rgba(62, 39, 35, 0.15);
 }
 
-/* L'entête de la modale */
 .modal-header {
   border-bottom: 2px solid #d7ccc8;
   background-color: #efebe9;
@@ -97,7 +109,7 @@ button.btn-primary.mb-3:hover {
   font-weight: bold;
 }
 
-/* Les champs de saisie dans la modale */
+
 .modal-body label {
   color: #5d4037;
   font-weight: 600;
@@ -117,33 +129,32 @@ button.btn-primary.mb-3:hover {
   box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.2);
 }
 
-/* PIED DE PAGE MODALE - C'est ici qu'on force les couleurs des boutons */
+
 .modal-footer {
   border-top: 1px solid #d7ccc8;
   background-color: #fcfbf9;
   padding: 1rem;
 }
 
-/* Bouton "Valider" / "Mettre à jour" (Primary) */
 .modal-footer .btn-primary {
-  background-color: #3e2723 !important; /* Marron cuir foncé */
+  background-color: #3e2723 !important;
   border-color: #3e2723 !important;
-  color: #eec; /* Texte couleur or pâle */
+  color: #eec;
 }
 .modal-footer .btn-primary:hover {
   background-color: #281a16 !important;
 }
 
-/* Bouton "Effacer" (Secondary) */
+
 .modal-footer .btn-secondary {
-  background-color: #8d6e63 !important; /* Marron clair */
+  background-color: #8d6e63 !important;
   border-color: #8d6e63 !important;
   color: white;
 }
 
-/* Bouton "Retour" (Dark) */
+
 .modal-footer .btn-dark {
-  background-color: #607d8b !important; /* Bleu gris (Encre) */
+  background-color: #607d8b !important;
   border-color: #546e7a !important;
   color: white;
 }
