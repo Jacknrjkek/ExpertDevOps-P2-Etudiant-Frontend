@@ -2,3 +2,18 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@700&display=swap');
+
+body {
+  font-family: 'Lato', sans-serif;
+  /* Couleur de fond "Parchemin clair" */
+  background-color: #f4f1ea;
+  color: #2c2c2c;
+}
+
+/* Tous les titres en police Serif (style livre) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Merriweather', serif;
+}
