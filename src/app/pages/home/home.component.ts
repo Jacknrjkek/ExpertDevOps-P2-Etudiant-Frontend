@@ -11,8 +11,12 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent {
 
+  // INJECTION DE DÉPENDANCE :
+  // On injecte le service 'Router' pour pouvoir naviguer via le code (TypeScript)
+  // plutôt que via des liens href classiques.
   constructor(private router: Router) {}
 
+  // Méthodes de navigation programmatique
   goToLogin() {
     this.router.navigate(['/login']);
   }
