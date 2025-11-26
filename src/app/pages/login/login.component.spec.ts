@@ -4,34 +4,32 @@ import { UserService } from '../../core/service/user.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { MaterialModule } from '../../shared/material.module';
 
 /**
- * ===========================================================================
- * PATCH POUR LES TESTS :
- * - jsdom ne connaît pas alert() → on le mocke ici
- * ===========================================================================
- */
-
-(global as any).alert = jest.fn();
-
-/**
- * ===========================================================================
+ * ============================================================================
  * TESTS UNITAIRES DU COMPOSANT : LoginComponent
- * ===========================================================================
- * Objectifs :
- * - Vérifier le comportement du formulaire de connexion
- * - Vérifier que UserService est correctement appelé
- * - Vérifier les redirections et le stockage du token
+ * ============================================================================
+ * Objectifs pédagogiques pour la soutenance :
  *
- * Ce que l’on NE teste PAS :
- * - L’affichage visuel du template
- * - Les erreurs API complexes
- * - Le comportement du MaterialModule (hors périmètre)
+ * 1. Vérifier l’état initial du formulaire (invalid au chargement)
+ * 2. Vérifier que la soumission n’appelle PAS le service si le formulaire est invalide
+ * 3. Vérifier l’appel correct au UserService lors d’un formulaire valide
+ * 4. Vérifier le stockage du token dans localStorage
+ * 5. Vérifier la redirection vers /students après login réussi
+ * 6. Vérifier la gestion d’erreur (ex: identifiants incorrects)
+ * 7. Vérifier le fonctionnement du reset() du formulaire
+ * 8. Vérifier la méthode goHome()
  *
- * Outils :
- * - Jest : mocks, assertions
- * - TestBed : simulation du contexte Angular
- * ===========================================================================
+ * Technologies testées :
+ * - Angular Standalone Components
+ * - Jest (mocks, spies, asserts)
+ * - TestBed (émulation du contexte Angular)
+ *
+ * Note importante :
+ * MaterialModule DOIT être importé sous peine d’erreur de compilation Angular
+ * dans le template (mat-form-field, mat-input).
+ * ============================================================================
  */
 
 describe('LoginComponent', () => {
@@ -39,26 +37,32 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
 
-  // ---------------------------------------------------------------------------
-  // Mock du UserService :
-  // - login() renvoie un Observable simulé
-  // - sera personnalisé dans chaque test
-  // ---------------------------------------------------------------------------
+  /** -------------------------------------------------------------------------
+   * Mocks des dépendances du composant
+   * - UserService : simulé pour éviter tout appel HTTP réel
+   * - Router : simulé pour éviter une vraie navigation
+   * ------------------------------------------------------------------------- */
   const userServiceMock = {
     login: jest.fn()
   };
 
-  // Mock du Router pour éviter une vraie navigation
   const routerMock = {
     navigate: jest.fn()
   };
 
+  /** -------------------------------------------------------------------------
+   * INITIALISATION DU TESTBED
+   * - Import du composant standalone
+   * - Import des modules Angular nécessaires
+   * - Injection des mocks pour les providers
+   * ------------------------------------------------------------------------- */
   beforeEach(async () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        LoginComponent,          // Composant standalone
-        ReactiveFormsModule      // Requis pour le formulaire réactif
+        LoginComponent,          // composant standalone Angular 17
+        ReactiveFormsModule,     // nécessaire pour les FormGroup
+        MaterialModule           // requis pour compiler le template Angular
       ],
       providers: [
         { provide: UserService, useValue: userServiceMock },
@@ -68,91 +72,94 @@ describe('LoginComponent', () => {
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges(); // Déclenche ngOnInit
+
+    // Reset des mocks à chaque test pour éviter les interférences
+    userServiceMock.login.mockReset();
+    routerMock.navigate.mockReset();
+
+    // Déclenche ngOnInit()
+    fixture.detectChanges();
   });
 
-  /* ===========================================================================
-     SECTION : INITIALISATION DU FORMULAIRE
-     =========================================================================== */
+  /* ==========================================================================
+     SECTION : TESTS DU FORMULAIRE AU CHARGEMENT
+     ========================================================================== */
 
   it('devrait initialiser un formulaire invalide au démarrage', () => {
     expect(component.loginForm.invalid).toBe(true);
   });
 
-  /* ===========================================================================
-     SECTION : VALIDATION / SOUMISSION
-     =========================================================================== */
+  /* ==========================================================================
+     SECTION : TEST DE LA SOUMISSION
+     ========================================================================== */
 
   it('ne devrait PAS appeler userService.login() si le formulaire est invalide', () => {
-    component.onSubmit();
+
+    component.onSubmit(); // formulaire vide → invalide
 
     expect(userServiceMock.login).not.toHaveBeenCalled();
   });
 
   it('devrait appeler userService.login() avec les bonnes valeurs si le formulaire est valide', () => {
-    // Remplissage du formulaire
+
+    // Remplissage manuel du formulaire
     component.loginForm.setValue({
       login: 'testuser',
       password: '123456'
     });
 
-    // Mock retour API
+    // Mock du retour HTTP
     userServiceMock.login.mockReturnValue(of({ token: 'abc123' }));
 
     component.onSubmit();
 
+    // Vérifie que le service a été appelé avec un payload correct
     expect(userServiceMock.login).toHaveBeenCalledWith({
       login: 'testuser',
       password: '123456'
     });
   });
 
-  /* ===========================================================================
-     SECTION : STOCKAGE DU TOKEN + REDIRECTION
-     =========================================================================== */
+  /* ==========================================================================
+     SECTION : STOCKAGE DU TOKEN ET REDIRECTION
+     ========================================================================== */
 
   it('devrait stocker le token et rediriger vers /students en cas de succès', () => {
+
     component.loginForm.setValue({
       login: 'john',
       password: 'doe'
     });
 
-    // Mock retour API
     userServiceMock.login.mockReturnValue(of({ token: 'jwt_token' }));
 
-    // Mock explicite de localStorage.setItem()
-    const setItemMock = jest.fn();
+    // Spy sur localStorage
+    const storeSpy = jest.spyOn(Storage.prototype, 'setItem');
 
-    Object.defineProperty(window, 'localStorage', {
-      value: {
-        setItem: setItemMock,
-        getItem: jest.fn(),
-        removeItem: jest.fn(),
-        clear: jest.fn()
-      },
-      writable: true
-    });
 
     component.onSubmit();
 
-    expect(setItemMock).toHaveBeenCalledWith('token', 'jwt_token');
+    expect(storeSpy).toHaveBeenCalledWith('token', 'jwt_token');
     expect(routerMock.navigate).toHaveBeenCalledWith(['/students']);
   });
 
-  /* ===========================================================================
-     SECTION : CAS D’ÉCHEC (identifiants incorrects)
-     =========================================================================== */
+  /* ==========================================================================
+     SECTION : ERREUR DE LOGIN
+     ========================================================================== */
 
   it('devrait afficher une erreur si le login échoue', () => {
+
     component.loginForm.setValue({
       login: 'wrong',
       password: 'wrong'
     });
 
-    // Mock erreur API
-    userServiceMock.login.mockReturnValue(throwError(() => new Error()));
+    // Simule une erreur HTTP
+    userServiceMock.login.mockReturnValue(
+      throwError(() => new Error('Invalid credentials'))
+    );
 
-    // Espion console.error pour éviter pollution logs
+    // Silence le console.error
     jest.spyOn(console, 'error').mockImplementation(() => null);
 
     component.onSubmit();
@@ -160,13 +167,18 @@ describe('LoginComponent', () => {
     expect(userServiceMock.login).toHaveBeenCalled();
   });
 
-  /* ===========================================================================
+  /* ==========================================================================
      SECTION : RESET FORMULAIRE
-     =========================================================================== */
+     ========================================================================== */
 
   it('devrait réinitialiser submitted et le formulaire lors de onReset()', () => {
+
     component.submitted = true;
-    component.loginForm.setValue({ login: 'x', password: 'y' });
+
+    component.loginForm.setValue({
+      login: 'x',
+      password: 'y'
+    });
 
     component.onReset();
 
@@ -174,11 +186,12 @@ describe('LoginComponent', () => {
     expect(component.loginForm.value).toEqual({ login: null, password: null });
   });
 
-  /* ===========================================================================
+  /* ==========================================================================
      SECTION : NAVIGATION HOME
-     =========================================================================== */
+     ========================================================================== */
 
   it('devrait rediriger vers /home lors de goHome()', () => {
+
     component.goHome();
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['/home']);
