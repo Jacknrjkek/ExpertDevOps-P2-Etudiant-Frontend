@@ -34,8 +34,13 @@ export class LoginComponent implements OnInit {
   submitted = false;
 
   // ---------------------------------------------------------------------------
+  // POPUP : État + type ('success' ou 'error')
+  // ---------------------------------------------------------------------------
+  showPopup = false;
+  popupType: 'success' | 'error' = 'success';
+
+  // ---------------------------------------------------------------------------
   // INITIALISATION DU FORMULAIRE
-  // Création du formulaire réactif avec validations obligatoires.
   // ---------------------------------------------------------------------------
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -58,16 +63,13 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-    // Stop si le formulaire est invalide
     if (this.loginForm.invalid) return;
 
-    // Construction de la charge utile envoyée au backend
     const payload = {
       login: this.form['login'].value,
       password: this.form['password'].value
     };
 
-    // Appel API + gestion automatique de l’unsubscribe
     this.userService.login(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -75,7 +77,6 @@ export class LoginComponent implements OnInit {
 
           console.log('Réponse backend =', res);
 
-          // Sécurité : stocker le Token JWT en localStorage
           if (res?.token) {
             localStorage.setItem('token', res.token);
             console.log('Token stocké =', res.token);
@@ -83,18 +84,32 @@ export class LoginComponent implements OnInit {
             console.error(' Aucun token renvoyé !');
           }
 
-          alert('Login réussi !');
-
-          // Navigation vers la page "students"
-          this.router.navigate(['/students']);
+          // POPUP SUCCÈS
+          this.popupType = 'success';
+          this.showPopup = true;
         },
 
-        // Gestion d’erreur en cas d’identifiants incorrects
+        // POPUP ERREUR
         error: (err) => {
           console.error('Erreur login :', err);
-          alert('Identifiant ou mot de passe incorrect.');
+
+          this.popupType = 'error';
+          this.showPopup = true;
         }
       });
+  }
+
+  // ---------------------------------------------------------------------------
+  // MÉTHODE : Fermeture du popup
+  // - Si succès → redirection
+  // - Si erreur → on ferme juste
+  // ---------------------------------------------------------------------------
+  closePopup() {
+    this.showPopup = false;
+
+    if (this.popupType === 'success') {
+      this.router.navigate(['/students']);
+    }
   }
 
   // ---------------------------------------------------------------------------

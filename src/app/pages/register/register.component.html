@@ -5,7 +5,8 @@
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
       <div class="form-row">
-        <!-- Prénom -->
+
+        <!-- Champ : Prénom -->
         <div class="form-group col-5">
           <label>Prénom</label>
           <input
@@ -23,7 +24,7 @@
           }
         </div>
 
-        <!-- Nom -->
+        <!-- Champ : Nom -->
         <div class="form-group col-5">
           <label>Nom</label>
           <input
@@ -40,9 +41,10 @@
             </div>
           }
         </div>
+
       </div>
 
-      <!-- Identifiant -->
+      <!-- Champ : Identifiant -->
       <div class="form-group mt-3">
         <label>Identifiant</label>
         <input
@@ -60,7 +62,7 @@
         }
       </div>
 
-      <!-- Mot de passe -->
+      <!-- Champ : Mot de passe -->
       <div class="form-group mt-3">
         <label>Mot de passe</label>
         <input
@@ -88,3 +90,17 @@
     </form>
   </div>
 </div>
+
+
+<!-- ==========================================================================
+     POPUP DE CONFIRMATION - Apparaît uniquement après inscription réussie
+     ========================================================================== -->
+@if (showPopup) {
+  <div class="popup-overlay">
+    <div class="popup-box">
+      <div class="popup-title">Inscription réussie</div>
+      <p>Votre compte a bien été créé.</p>
+      <button class="popup-btn" (click)="closePopup()">OK</button>
+    </div>
+  </div>
+}

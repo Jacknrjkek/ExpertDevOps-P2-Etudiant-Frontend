@@ -18,20 +18,25 @@ export class RegisterComponent implements OnInit {
 
   // ---------------------------------------------------------------------------
   // INJECTIONS DE DÉPENDANCES
-  // Services nécessaires au formulaire, navigation, API et destruction.
+  // Services nécessaires au formulaire, navigation, API et nettoyage automatique.
   // ---------------------------------------------------------------------------
   private userService = inject(UserService);
   private formBuilder = inject(FormBuilder);
-  private destroyRef = inject(DestroyRef);
+  private destroyRef = inject(DestroyRef); // détruit automatiquement les subscriptions
   private router = inject(Router);
 
   // ---------------------------------------------------------------------------
   // PROPRIÉTÉS DU COMPOSANT
   // - registerForm : structure du formulaire réactif
-  // - submitted : indique si l’utilisateur a tenté une soumission
+  // - submitted : indique si une tentative d’envoi a été effectuée
   // ---------------------------------------------------------------------------
   registerForm: FormGroup = new FormGroup({});
   submitted: boolean = false;
+
+  // ---------------------------------------------------------------------------
+  // NOUVEAU : popup succès (affiché uniquement quand l'inscription fonctionne)
+  // ---------------------------------------------------------------------------
+  showPopup = false;
 
   // ---------------------------------------------------------------------------
   // INITIALISATION DU FORMULAIRE
@@ -46,17 +51,18 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // Getter pour simplifier l’accès au template
+  // Getter pour simplifier l’accès au template HTML
   get form() {
     return this.registerForm.controls;
   }
 
   // ---------------------------------------------------------------------------
   // MÉTHODE : Soumission du formulaire
-  // 1. Active "submitted"
-  // 2. Vérifie la validité
-  // 3. Envoie l'objet Register au backend
-  // 4. Redirige vers la page Login en cas de succès
+  // 1. Active "submitted" pour afficher les erreurs
+  // 2. Vérifie la validité du formulaire
+  // 3. Construit l'objet Register conformément au modèle
+  // 4. Appelle l’API d’inscription
+  // 5. Affiche un popup en cas de succès
   // ---------------------------------------------------------------------------
   onSubmit(): void {
     this.submitted = true;
@@ -65,7 +71,6 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    // Création de l'objet conforme au modèle 'Register'
     const registerUser: Register = {
       firstName: this.form['firstName'].value,
       lastName: this.form['lastName'].value,
@@ -73,17 +78,27 @@ export class RegisterComponent implements OnInit {
       password: this.form['password'].value
     };
 
-    // Appel Backend + nettoyage automatique
     this.userService.register(registerUser)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-
-        // Confirmation simple
-        alert('SUCCESS!! :-)');
-
-        // Redirection vers la page Login
-        this.router.navigate(['/login']);
+      .subscribe({
+        next: () => {
+          // Popup succès (remplace SUCCESS!! :-) )
+          this.showPopup = true;
+        },
+        error: (err) => {
+          console.error('Erreur inscription :', err);
+          alert('Impossible de finaliser l’inscription.');
+        }
       });
+  }
+
+  // ---------------------------------------------------------------------------
+  // MÉTHODE : Fermeture du popup
+  // Redirige l’utilisateur vers la page de connexion
+  // ---------------------------------------------------------------------------
+  closePopup() {
+    this.showPopup = false;
+    this.router.navigate(['/login']);
   }
 
   // ---------------------------------------------------------------------------
@@ -95,7 +110,7 @@ export class RegisterComponent implements OnInit {
   }
 
   // ---------------------------------------------------------------------------
-  // MÉTHODE : Retour à la Home
+  // MÉTHODE : Retour à Home
   // ---------------------------------------------------------------------------
   goHome() {
     this.router.navigate(['/home']);

@@ -38,7 +38,6 @@
         }
       </div>
 
-      <!-- BOUTONS AVEC ESPACEMENT PROPRE -->
       <div class="d-flex justify-content-center mt-4 gap-3">
         <button class="btn btn-primary" type="submit">Se connecter</button>
         <button class="btn btn-secondary" type="reset" (click)="onReset()">Effacer</button>
@@ -48,3 +47,25 @@
     </form>
   </div>
 </div>
+
+<!-- ==========================================================================
+     POPUP SUIVANT LE TYPE : SUCCÈS OU ERREUR
+     ========================================================================== -->
+@if (showPopup) {
+  <div class="popup-overlay">
+    <div class="popup-box">
+
+      @if (popupType === 'success') {
+        <div class="popup-title">Connexion réussie</div>
+        <p>Bienvenue, authentification validée.</p>
+      }
+
+      @if (popupType === 'error') {
+        <div class="popup-title popup-error-title">Échec de connexion</div>
+        <p>Identifiant ou mot de passe incorrect.</p>
+      }
+
+      <button class="popup-btn" (click)="closePopup()">OK</button>
+    </div>
+  </div>
+}
