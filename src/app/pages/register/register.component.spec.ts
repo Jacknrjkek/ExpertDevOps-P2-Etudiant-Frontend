@@ -7,14 +7,6 @@ import { Router } from '@angular/router';
 
 /**
  * ===========================================================================
- * PATCH POUR LES TESTS :
- * jsdom ne connaît pas alert() → on le mocke pour éviter les erreurs
- * ===========================================================================
- */
-(global as any).alert = jest.fn();
-
-/**
- * ===========================================================================
  * TESTS UNITAIRES DU COMPOSANT : RegisterComponent
  * ===========================================================================
  * Objectifs pédagogiques pour la soutenance :
@@ -23,8 +15,8 @@ import { Router } from '@angular/router';
  * 2. Vérifier la validation des champs (form invalid au départ)
  * 3. Vérifier l’appel correct au UserService lors d’un formulaire valide
  * 4. Vérifier le popup en cas de succès
- * 5. Vérifier que la redirection se fait dans closePopup()
- * 6. Vérifier la gestion d’erreur côté API (alert)
+ * 5. Vérifier que la redirection se fait dans closePopup() après succès
+ * 6. Vérifier la gestion d’erreur côté API → popup erreur (pas d’alert)
  * 7. Vérifier le reset du formulaire
  *
  * Technologies testées :
@@ -56,7 +48,6 @@ describe('RegisterComponent', () => {
   // INITIALISATION DU TESTBED
   // =====================================================================
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       imports: [
         RegisterComponent,       // composant standalone Angular 17
@@ -71,19 +62,15 @@ describe('RegisterComponent', () => {
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
 
-    // Reset des mocks à chaque test
     userServiceMock.register.mockReset();
     routerMock.navigate.mockReset();
-    (global as any).alert.mockReset();
 
-    // Déclenche ngOnInit()
     fixture.detectChanges();
   });
 
   /* ===========================================================================
-     TEST : LE COMPOSANT DOIT EXISTER
+     TEST : LE COMPOSANT DOIT ÊTRE CRÉÉ
      =========================================================================== */
-
   it('devrait être créé', () => {
     expect(component).toBeTruthy();
   });
@@ -91,7 +78,6 @@ describe('RegisterComponent', () => {
   /* ===========================================================================
      VALIDATION DU FORMULAIRE
      =========================================================================== */
-
   it('le formulaire devrait être invalide lorsqu’il est vide', () => {
     expect(component.registerForm.invalid).toBe(true);
   });
@@ -99,10 +85,7 @@ describe('RegisterComponent', () => {
   /* ===========================================================================
      TEST : APPEL DU SERVICE AVEC UN FORMULAIRE VALIDE
      =========================================================================== */
-
   it('devrait appeler userService.register() si le formulaire est valide', () => {
-
-    // Simule retour API OK
     userServiceMock.register.mockReturnValue(of({}));
 
     component.registerForm.setValue({
@@ -123,11 +106,9 @@ describe('RegisterComponent', () => {
   });
 
   /* ===========================================================================
-     TEST : POPUP APRÈS SUCCÈS (pas de redirection dans onSubmit)
+     TEST : POPUP APRÈS SUCCÈS (onSubmit + showPopup / popupType)
      =========================================================================== */
-
-  it('devrait afficher le popup après un register réussi', () => {
-
+  it('devrait afficher le popup succès après un register réussi', () => {
     userServiceMock.register.mockReturnValue(of({}));
 
     component.registerForm.setValue({
@@ -139,20 +120,17 @@ describe('RegisterComponent', () => {
 
     component.onSubmit();
 
-    // popup affiché
     expect(component.showPopup).toBe(true);
-
-    // AUCUNE redirection ici
+    expect(component.popupType).toBe('success');
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   /* ===========================================================================
-     TEST : REDIRECTION LORSQUE closePopup() EST APPELÉ
+     TEST : REDIRECTION LORSQUE closePopup() EST APPELÉ (cas succès)
      =========================================================================== */
-
-  it('devrait rediriger vers /login lorsqu’on ferme le popup', () => {
-
+  it('devrait rediriger vers /login lorsqu’on ferme le popup succès', () => {
     component.showPopup = true;
+    component.popupType = 'success';
 
     component.closePopup();
 
@@ -161,11 +139,9 @@ describe('RegisterComponent', () => {
   });
 
   /* ===========================================================================
-     TEST : ERREUR API → alert() + PAS de popup
+     TEST : ERREUR API → popup erreur, sans redirection
      =========================================================================== */
-
-  it('devrait afficher un alert() si register échoue et ne pas afficher le popup', () => {
-
+  it('devrait afficher le popup erreur si register échoue', () => {
     userServiceMock.register.mockReturnValue(
       throwError(() => new Error('Erreur API'))
     );
@@ -179,17 +155,15 @@ describe('RegisterComponent', () => {
 
     component.onSubmit();
 
-    expect(alert).toHaveBeenCalledWith('Impossible de finaliser l’inscription.');
-    expect(component.showPopup).toBe(false);
+    expect(component.showPopup).toBe(true);
+    expect(component.popupType).toBe('error');
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   /* ===========================================================================
-     RESET DU FORMULAIRE
+     TEST : RESET DU FORMULAIRE
      =========================================================================== */
-
   it('devrait réinitialiser le formulaire lors de onReset()', () => {
-
     component.submitted = true;
 
     component.registerForm.setValue({

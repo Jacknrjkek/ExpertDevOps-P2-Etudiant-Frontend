@@ -3,7 +3,12 @@
   "compilerOptions": {
     "sourceMap": false,
     "types": ["cypress", "node"],
-    "lib": ["es5", "dom"]
+    "lib": ["es5", "dom"],
+
+    // --- LIGNES À AJOUTER POUR CORRIGER TS5095 ---
+    "moduleResolution": "node", // Option de module-résolution souvent préférée par Cypress
+    "module": "es2020"         // Assure qu'on utilise une version moderne compatible
+    // ----------------------------------------------
   },
   "include": ["**/*.ts"]
 }

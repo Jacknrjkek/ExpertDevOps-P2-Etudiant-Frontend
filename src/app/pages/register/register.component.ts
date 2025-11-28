@@ -22,21 +22,22 @@ export class RegisterComponent implements OnInit {
   // ---------------------------------------------------------------------------
   private userService = inject(UserService);
   private formBuilder = inject(FormBuilder);
-  private destroyRef = inject(DestroyRef); // détruit automatiquement les subscriptions
+  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
   // ---------------------------------------------------------------------------
   // PROPRIÉTÉS DU COMPOSANT
   // - registerForm : structure du formulaire réactif
-  // - submitted : indique si une tentative d’envoi a été effectuée
+  // - submitted : indique si l’utilisateur a tenté une soumission
   // ---------------------------------------------------------------------------
   registerForm: FormGroup = new FormGroup({});
   submitted: boolean = false;
 
   // ---------------------------------------------------------------------------
-  // NOUVEAU : popup succès (affiché uniquement quand l'inscription fonctionne)
+  // POPUP : état + type ('success' ou 'error')
   // ---------------------------------------------------------------------------
   showPopup = false;
+  popupType: 'success' | 'error' = 'success';
 
   // ---------------------------------------------------------------------------
   // INITIALISATION DU FORMULAIRE
@@ -51,18 +52,18 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  // Getter pour simplifier l’accès au template HTML
+  // Getter pratique pour accéder aux contrôles dans le template
   get form() {
     return this.registerForm.controls;
   }
 
   // ---------------------------------------------------------------------------
   // MÉTHODE : Soumission du formulaire
-  // 1. Active "submitted" pour afficher les erreurs
-  // 2. Vérifie la validité du formulaire
-  // 3. Construit l'objet Register conformément au modèle
-  // 4. Appelle l’API d’inscription
-  // 5. Affiche un popup en cas de succès
+  // 1. Active "submitted"
+  // 2. Vérifie la validité
+  // 3. Construit l’objet Register
+  // 4. Appelle le backend via UserService.register()
+  // 5. En cas de succès → popup succès ; en cas d’erreur → popup erreur
   // ---------------------------------------------------------------------------
   onSubmit(): void {
     this.submitted = true;
@@ -82,23 +83,29 @@ export class RegisterComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          // Popup succès (remplace SUCCESS!! :-) )
+          // Popup succès
+          this.popupType = 'success';
           this.showPopup = true;
         },
         error: (err) => {
           console.error('Erreur inscription :', err);
-          alert('Impossible de finaliser l’inscription.');
+          // Popup erreur
+          this.popupType = 'error';
+          this.showPopup = true;
         }
       });
   }
 
   // ---------------------------------------------------------------------------
   // MÉTHODE : Fermeture du popup
-  // Redirige l’utilisateur vers la page de connexion
+  // - Si succès → redirection vers /login
+  // - Si erreur → on reste sur la page
   // ---------------------------------------------------------------------------
-  closePopup() {
+  closePopup(): void {
     this.showPopup = false;
-    this.router.navigate(['/login']);
+    if (this.popupType === 'success') {
+      this.router.navigate(['/login']);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -110,9 +117,9 @@ export class RegisterComponent implements OnInit {
   }
 
   // ---------------------------------------------------------------------------
-  // MÉTHODE : Retour à Home
+  // MÉTHODE : Navigation vers Home
   // ---------------------------------------------------------------------------
-  goHome() {
+  goHome(): void {
     this.router.navigate(['/home']);
   }
 }

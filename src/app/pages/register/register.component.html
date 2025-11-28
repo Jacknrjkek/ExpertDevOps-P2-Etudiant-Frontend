@@ -5,7 +5,6 @@
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
       <div class="form-row">
-
         <!-- Champ : Prénom -->
         <div class="form-group col-5">
           <label>Prénom</label>
@@ -41,7 +40,6 @@
             </div>
           }
         </div>
-
       </div>
 
       <!-- Champ : Identifiant -->
@@ -86,20 +84,28 @@
         <button class="btn btn-secondary" type="reset" (click)="onReset()">Effacer</button>
         <button class="btn btn-dark" type="button" (click)="goHome()">Accueil</button>
       </div>
-
     </form>
   </div>
 </div>
 
-
 <!-- ==========================================================================
-     POPUP DE CONFIRMATION - Apparaît uniquement après inscription réussie
+     POPUP DE CONFIRMATION - Apparaît après inscription (succès ou erreur)
+     Utilise showPopup + popupType
      ========================================================================== -->
 @if (showPopup) {
   <div class="popup-overlay">
     <div class="popup-box">
-      <div class="popup-title">Inscription réussie</div>
-      <p>Votre compte a bien été créé.</p>
+
+      @if (popupType === 'success') {
+        <div class="popup-title">Inscription réussie</div>
+        <p>Votre compte a bien été créé.</p>
+      }
+
+      @if (popupType === 'error') {
+        <div class="popup-title popup-error-title">Identifiant déjà utilisé.</div>
+        <p>Veuillez réessayer avec un autre identifiant.</p>
+      }
+
       <button class="popup-btn" (click)="closePopup()">OK</button>
     </div>
   </div>
