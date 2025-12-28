@@ -38,7 +38,7 @@ Interface utilisateur moderne pour l'application de gestion des étudiants. Dév
 
 ### 1. Cloner le projet
 ```bash
-git clone https://github.com/votre-repo/etudiant-frontend.git
+git clone https://github.com/Jacknrjkek/ExpertDevOps-P2-Etudiant-Frontend.git
 cd etudiant-frontend
 ```
 
